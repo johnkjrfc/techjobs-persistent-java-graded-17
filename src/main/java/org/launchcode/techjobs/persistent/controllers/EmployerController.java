@@ -17,7 +17,7 @@ public class EmployerController {
 
     @Autowired//links controller to repo
     private EmployerRepository employerRepository;
-    @GetMapping ("")
+    @GetMapping("/")
     public String index (Model model) {
         model.addAttribute("employers", employerRepository.findAll());
         return "employers/index";
