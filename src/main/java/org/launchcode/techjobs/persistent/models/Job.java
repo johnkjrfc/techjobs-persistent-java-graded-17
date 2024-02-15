@@ -10,16 +10,13 @@ import jakarta.validation.constraints.NotNull;
 import java.util.List;
 
 @Entity
-public class Job {
+public class Job extends AbstractEntity {
 
-    @Id
-    @GeneratedValue
-    private int id;
+
 
     @ManyToOne
     @NotNull
     private Employer employer;
-    private String name;
 
     private String skills;
 
@@ -28,21 +25,16 @@ public class Job {
     }
 
     // Initialize the id and value fields.
-    public Job(Employer employer, String someSkills) {
+    public Job(Employer employer, String skills) {
         super();
         this.employer = employer;
-        this.skills = someSkills;
+        this.skills = skills;
+
     }
 
     // Getters and setters.
     
-    public String getName() {
-        return name;
-    }
 
-    public void setName(String name) {
-        this.name = name;
-    }
 
     public Employer getEmployer() {
         return employer;
