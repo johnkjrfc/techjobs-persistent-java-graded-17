@@ -3,6 +3,7 @@ package org.launchcode.techjobs.persistent.controllers;
 import jakarta.validation.Valid;
 import org.launchcode.techjobs.persistent.models.Employer;
 import org.launchcode.techjobs.persistent.models.Job;
+import org.launchcode.techjobs.persistent.models.Skill;
 import org.launchcode.techjobs.persistent.models.data.EmployerRepository;
 import org.launchcode.techjobs.persistent.models.data.JobRepository;
 import org.launchcode.techjobs.persistent.models.data.SkillRepository;
@@ -39,22 +40,27 @@ public class HomeController {
     @GetMapping("add")
     public String displayAddJobForm(Model model) {
         model.addAttribute("employers", employerRepository.findAll());
+        model.addAttribute("skills", skillRepository.findAll());
         model.addAttribute(new Job());
         return "add";
     }
 
     @PostMapping("add")
     public String processAddJobForm(@ModelAttribute @Valid Job newJob,
-                                       Errors errors, Model model, @RequestParam(required = false) Integer employerId) {
+                                    Errors errors, Model model,
+                                    @RequestParam(required = false) Integer employerId,
+                                    @RequestParam(required = false) List<Integer> skills) {
 
         if (errors.hasErrors()) {
-	        model.addAttribute(new Job());
+            model.addAttribute(new Job());
             model.addAttribute("employers", employerRepository.findAll());
-
+            model.addAttribute("skills", skillRepository.findAll());
+            System.out.println(errors);
             return "add";
         }
-//        if (employerId != null){
-            //empId present--> create optEmp, and try to retrieve existing emp from repo based on req param
+        //handle employerId
+        //empId present--> create optEmp, and try to retrieve existing emp from repo based on req param
+        if(employerId != null){
             Optional<Employer> optionalEmployer = employerRepository.findById(employerId);
             if (optionalEmployer.isPresent()) {
                 //if employerId exists in repo, get it and use in newJob
@@ -64,12 +70,16 @@ public class HomeController {
                 //employerId on form, not found in repo
                 newJob.setEmployer(new Employer());
             }
-//        } else {
-//            //no employerId provided in form
-//            model.addAttribute("error", "Employer ID required");
-//            return "add";
-//        }
-//
+        }
+        //handle skill. Check that skill list is initialized, but contains no elements
+        if(skills != null && skills.isEmpty()) {
+            List<Skill> skillObjs = (List<Skill>) skillRepository.findAllById(skills);
+            newJob.setSkills(skillObjs);
+
+
+        }
+
+
 
         jobRepository.save(newJob);
         return "redirect:";
@@ -78,7 +88,7 @@ public class HomeController {
     @GetMapping("view/{jobId}")
     public String displayViewJob(Model model, @PathVariable int jobId) {
 
-            return "view";
+        return "view";
     }
 
 }

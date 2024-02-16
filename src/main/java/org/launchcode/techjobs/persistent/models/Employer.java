@@ -12,8 +12,8 @@ import java.util.List;
 
 @Entity
 public class Employer extends AbstractEntity {
-    @NotNull
-    @Size(min=1, max=80)
+    @NotNull(message = "Location is required")
+    @Size(message = "Location must be less than 80 characters", min=1, max=80)
     private String location;
 
     @OneToMany
