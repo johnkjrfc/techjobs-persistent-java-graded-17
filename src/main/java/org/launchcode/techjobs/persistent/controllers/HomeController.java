@@ -48,7 +48,7 @@ public class HomeController {
     @PostMapping("add")
     public String processAddJobForm(@ModelAttribute @Valid Job newJob,
                                     Errors errors, Model model,
-                                    @RequestParam(required = false) Integer employerId,
+                                    @RequestParam int employerId,
                                     @RequestParam(required = false) List<Integer> skills) {
 
         if (errors.hasErrors()) {
@@ -59,18 +59,17 @@ public class HomeController {
             return "add";
         }
         //handle employerId
-        //empId present--> create optEmp, and try to retrieve existing emp from repo based on req param
-        if(employerId != null){
-            Optional<Employer> optionalEmployer = employerRepository.findById(employerId);
-            if (optionalEmployer.isPresent()) {
-                //if employerId exists in repo, get it and use in newJob
-                Employer employer = optionalEmployer.get();
-                newJob.setEmployer(employer);
-            } else {
-                //employerId on form, not found in repo
-                newJob.setEmployer(new Employer());
-            }
+
+        Optional<Employer> optionalEmployer = employerRepository.findById(employerId);
+        if (optionalEmployer.isPresent()) {
+            //if employerId exists in repo, get it and use in newJob
+            Employer employer = optionalEmployer.get();
+            newJob.setEmployer(employer);
+        } else {
+            //employerId on form, not found in repo
+            newJob.setEmployer(new Employer());
         }
+
         //handle skill. Check that skill list is initialized, but contains no elements
         if(skills != null && skills.isEmpty()) {
             List<Skill> skillObjs = (List<Skill>) skillRepository.findAllById(skills);
