@@ -39,8 +39,10 @@ public class HomeController {
 
     @GetMapping("add")
     public String displayAddJobForm(Model model) {
+        //add all ${employers} and ${skills} for add view
         model.addAttribute("employers", employerRepository.findAll());
         model.addAttribute("skills", skillRepository.findAll());
+        //empty new Job to accept UI
         model.addAttribute(new Job());
         return "add";
     }
@@ -52,10 +54,11 @@ public class HomeController {
                                     @RequestParam(required = false) List<Integer> skills) {
 
         if (errors.hasErrors()) {
+            //UI if errors present
             model.addAttribute(new Job());
             model.addAttribute("employers", employerRepository.findAll());
             model.addAttribute("skills", skillRepository.findAll());
-            System.out.println(errors);
+            model.addAttribute(errors);
             return "add";
         }
         //handle employerId
@@ -75,7 +78,6 @@ public class HomeController {
             List<Skill> skillObjs = (List<Skill>) skillRepository.findAllById(skills);
             newJob.setSkills(skillObjs);
 
-
         }
 
 
@@ -86,6 +88,8 @@ public class HomeController {
 
     @GetMapping("view/{jobId}")
     public String displayViewJob(Model model, @PathVariable int jobId) {
+        Optional<Job> optionalJob = jobRepository.findById(jobId);
+        model.addAttribute("job", optionalJob.get());
 
         return "view";
     }
